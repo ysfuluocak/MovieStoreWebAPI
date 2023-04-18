@@ -1,17 +1,27 @@
 ﻿using Microsoft.Extensions.Configuration;
 
+
 namespace Persistence
 {
-    public class Configurations
+    public static class Configurations
     {
-        IConfiguration Configuration { get;}
+        //IConfiguration Configuration { get;}
 
-        public Configurations(IConfiguration configuration)
+        //public Configurations(IConfiguration configuration)
+        //{
+        //    Configuration = configuration;
+        //    ConnectionString = Configuration.GetConnectionString("SqlServer");
+        //}
+
+        public static string ConnectionString
         {
-            Configuration = configuration;
-            ConnectionString = Configuration.GetConnectionString("SqlServer");
+            get
+            {
+                ConfigurationManager configurationManager = new ConfigurationManager();
+                configurationManager.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../../Presentation/MovieStoreWebAPI"));
+                configurationManager.AddJsonFile("appsettings.json");
+                return configurationManager.GetConnectionString("SqlServer");
+            }
         }
-
-        public static string ConnectionString;
     }
 }

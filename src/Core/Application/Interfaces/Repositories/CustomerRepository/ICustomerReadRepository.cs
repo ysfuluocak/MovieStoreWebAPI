@@ -5,5 +5,6 @@ namespace Application.Interfaces.Repositories.CustomerRepository
 {
     public interface ICustomerReadRepository : IReadRepository<Customer>
     {
+       Task<Customer?> GetOrderByCustomerIdAsync(int customerId);
     }
 }

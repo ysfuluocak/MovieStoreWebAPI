@@ -22,6 +22,21 @@ namespace Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("ActorMovie", b =>
+                {
+                    b.Property<int>("ActorsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MoviesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ActorsId", "MoviesId");
+
+                    b.HasIndex("MoviesId");
+
+                    b.ToTable("ActorMovie");
+                });
+
             modelBuilder.Entity("CustomerGenre", b =>
                 {
                     b.Property<int>("CustomersId")
@@ -65,14 +80,6 @@ namespace Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -130,10 +137,10 @@ namespace Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("DirectorId")
+                    b.Property<int?>("DirectorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("GenreId")
+                    b.Property<int?>("GenreId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -157,24 +164,6 @@ namespace Persistence.Migrations
                     b.HasIndex("GenreId");
 
                     b.ToTable("Movies");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MovieActor", b =>
-                {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ActorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("MovieId", "ActorId");
-
-                    b.HasIndex("ActorId");
-
-                    b.ToTable("MovieActor");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -234,12 +223,33 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpireDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ActorMovie", b =>
+                {
+                    b.HasOne("Domain.Entities.Actor", null)
+                        .WithMany()
+                        .HasForeignKey("ActorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Movie", null)
+                        .WithMany()
+                        .HasForeignKey("MoviesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CustomerGenre", b =>
@@ -272,38 +282,15 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.Entities.Director", "Director")
                         .WithMany("Movies")
-                        .HasForeignKey("DirectorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DirectorId");
 
                     b.HasOne("Domain.Entities.Genre", "Genre")
                         .WithMany("Movies")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GenreId");
 
                     b.Navigation("Director");
 
                     b.Navigation("Genre");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MovieActor", b =>
-                {
-                    b.HasOne("Domain.Entities.Actor", "Actor")
-                        .WithMany("Movies")
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Movie", "Movie")
-                        .WithMany("Actors")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Actor");
-
-                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -325,11 +312,6 @@ namespace Persistence.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Actor", b =>
-                {
-                    b.Navigation("Movies");
-                });
-
             modelBuilder.Entity("Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Orders");
@@ -343,11 +325,6 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Genre", b =>
                 {
                     b.Navigation("Movies");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Movie", b =>
-                {
-                    b.Navigation("Actors");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>

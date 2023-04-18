@@ -5,9 +5,10 @@ namespace Application.Interfaces.Repositories.Common
 {
     public interface IReadRepository<T> : IEntityRepository<T> where T : BaseEntity, new()
     {
-        IQueryable<T> GetAllAsync();
-        IQueryable<T> GetAsync(Expression<Func<T, bool>> filter);
-        Task<T> GetByIdAsync(int id);
+        IQueryable<T> GetAll();
+        IQueryable<T> GetByFilter(Expression<Func<T, bool>> filter);
+        Task<T?> GetAsync(Expression<Func<T, bool>> filter);
+        Task<T?> GetByIdAsync(int id);
 
     }
 }
